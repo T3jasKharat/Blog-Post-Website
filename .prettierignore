@@ -1,3 +1,4 @@
 blog/templates/blog/index.html
 blog/templates/blog/all-posts.html
 blog/templates/blog/post-detail.html
+blog/templates/blog/stored-posts.html
