@@ -14,10 +14,8 @@ from pathlib import Path
 import os
 import dj_database_url
 from dotenv import load_dotenv
-import sys
 
 load_dotenv()
-print("AIVEN_DATABASE_URL:", os.environ.get('AIVEN_DATABASE_URL'), file=sys.stderr)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,13 +154,13 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-MEDIA_ROOT = BASE_DIR / "uploads"
-MEDIA_URL = "/files/"
+# MEDIA_ROOT = BASE_DIR / "uploads"
 
 DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = 'blogpost-bucket'  # Replace with your actual bucket name
-GS_PROJECT_ID = 'my-django-project-123'  # Replace with your actual GCP project ID
-
+GS_BUCKET_NAME = 'blogpost-bucket'
+GS_PROJECT_ID = 'my-django-project-123'
+GS_QUERYSTRING_AUTH = False
+MEDIA_URL = "https://storage.googleapis.com/blogpost-bucket/"
 # Optional: GCS custom domain (if you want to serve via CDN or custom domain)
 # MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
 
