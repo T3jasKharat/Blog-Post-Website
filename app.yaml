@@ -2,6 +2,15 @@ runtime: python39
 
 # 1) Environment variables for Django and Aiven
 env_variables:
+  # Tell Django which settings module to use
+  DJANGO_SETTINGS_MODULE: 'my_site.settings'
+
+  # Your Django SECRET_KEY (make sure this is a long, random string — do NOT check into source control)
+  DJANGO_SECRET_KEY: 'django-insecure-(lvexw@0=^g+gv1-=pehv$-f=)7(-=@4=@_*$u^i72yyw*wd@q'
+
+  # Copy exactly the “Service URI” from Aiven here (including ?sslmode=require)
+  # Example (replace with your own values):
+  AIVEN_DATABASE_URL: 'postgres://avnadmin:AVNS_ILZpgq-TscIEAW9FfRk@myblog-db-my-django-project-123.j.aivencloud.com:18137/defaultdb?sslmode=require'
 
 # 2) Update entrypoint so that, on each instance startup:
 #    a) Django runs migrations against Aiven (so tables like auth_user exist)
