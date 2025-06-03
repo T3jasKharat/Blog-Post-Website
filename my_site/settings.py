@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url
+import sys
+print("AIVEN_DATABASE_URL:", os.environ.get('AIVEN_DATABASE_URL'), file=sys.stderr)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,17 +24,39 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(lvexw@0=^g+gv1-=pehv$-f=)7(-=@4=@_*$u^i72yyw*wd@q'
+SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://my-django-project-123.el.r.appspot.com/',
+    '.appspot.com', 
+    'localhost',
+    '127.0.0.1',
+]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
 
 # Application definition
 
 INSTALLED_APPS = [
+    'storages',
     'blog',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -76,10 +103,7 @@ WSGI_APPLICATION = 'my_site.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(os.environ['AIVEN_DATABASE_URL'], conn_max_age=600)
 }
 
 
@@ -117,7 +141,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
   BASE_DIR / "static"
 ]
@@ -128,3 +153,16 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = BASE_DIR / "uploads"
 MEDIA_URL = "/files/"
+
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_BUCKET_NAME = 'blogpost-bucket'  # Replace with your actual bucket name
+GS_PROJECT_ID = 'my-django-project-123'  # Replace with your actual GCP project ID
+
+# Optional: GCS custom domain (if you want to serve via CDN or custom domain)
+# MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+
+# Optional: Explicit path to your service account key JSON file
+# Only needed if not using GOOGLE_APPLICATION_CREDENTIALS env var
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+#     os.path.join(BASE_DIR, 'path_to_your_service_account.json')
+# )
